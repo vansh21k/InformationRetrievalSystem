@@ -3,6 +3,7 @@ Created on 10-Apr-2014
 
 @author: VANSH
 '''
+from stemming.porter2 import stem
 import string
 from operator import itemgetter
 from preprocess import *
@@ -16,6 +17,8 @@ index_map = {}
 index = {} #2d term Frequence Matrix
 inverted_index = {} #Inverted Index
 distinct_words = set() #Set to identify all words 
+
+
 def getName(i):
     global index_map
     for name, counter in index_map.items():
@@ -24,6 +27,7 @@ def getName(i):
     return None
 
 def buildInvertedIndex():
+    ''' Generate the inverted index'''
     global index
     global distinct_words
     global index
@@ -48,8 +52,12 @@ def buildInvertedIndex():
             if each_row != []:
                 inverted_index_list[i][index_map[each_row[0]]]+=each_row[1]
     print inverted_index_list
-def readFiles(file_list):
-    '''Read the files, delete all punctuation and make the files ready for indexing'''
+
+def readFiles(file_list, stemming = False, lametizer = False):
+    '''Read the files, apply normalization and make the files ready for indexing
+       Current Standard of Normalization: lower case, remove punctuation, spell check
+       To add: Lemmetizer, Stop Word List
+     '''
     global index
     global inverted_index
     global distinct_words
@@ -60,10 +68,12 @@ def readFiles(file_list):
             with open(each, 'r') as current_file:
                 index_map[each] = count
                 for current_line in current_file:
-                    current_line = removePunctuation(current_line.lower()).split(' ')
+                    current_line = correct_sentence(removePunctuation(current_line.lower())).split(' ')
                     for each_word in current_line:
                         if each_word == '':
                             continue
+                        elif stemming == True:
+                            distinct_words.add(stem(each_word))
                         else:
                             distinct_words.add(each_word)
                 count = count + 1
@@ -80,13 +90,15 @@ def readFiles(file_list):
         try:
             with open(each, 'r') as current_file:
                 for current_line in current_file:
-                    current_line = removePunctuation(current_line.lower()).split(' ')
+                    current_line = correct_sentence(removePunctuation(current_line.lower())).split(' ')
                     for each_word in current_line:
                         if each_word == '':
                             continue
+                        elif stemming == True:
+                            index[index_map[each]][distinct_words.index(stem(each_word))]+=1
                         else:
                             index[index_map[each]][distinct_words.index(each_word)]+=1
         except IOError as err:
             print 'File Error: ' + str(err) 
     buildInvertedIndex()
-readFiles(['a.txt', 'b.txt'])
+readFiles(['a.txt', 'b.txt'], stemming = True)
