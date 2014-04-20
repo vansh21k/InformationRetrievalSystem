@@ -6,7 +6,7 @@ Created on 10-Apr-2014
 import re, collections
 import string
 from stemming.porter2 import stem
-
+import os
 def words(text): return re.findall('[a-z]+', text.lower()) 
 
 def train(features):
@@ -15,9 +15,9 @@ def train(features):
         model[f] += 1
     return model
 
-NWORDS = train(words(file('big.txt').read()))
+NWORDS = train(words(file('resources/big.txt').read()))
 
-alphabet = 'abcdefghijklmnopqrstuvwxyz'
+alphabet = 'abcdefghijklmnopqrstuvwxyz&|*'
 
 def edits1(word):
     splits     = [(word[:i], word[i:]) for i in range(len(word) + 1)]
@@ -49,13 +49,13 @@ def correct_sentence(sentence):
     return new.strip()
 
 def name_normalizer(s):
-    exclude = set(string.punctuation)
+    exclude = set(string.punctuation.replace('&','').replace('|','').replace('*',''))
     s = ''.join(ch for ch in s if ch not in exclude)
     return s
 
 def removePunctuation(s):
     ''' Removes punctuation for indexing'''
-    exclude = set(string.punctuation)
+    exclude = set(string.punctuation.replace('&','').replace('|','').replace('*',''))
     test = ''
     for each in s:
         if each in exclude:
