@@ -107,12 +107,14 @@ def buildInvertedIndex():
     #print len(inverted_index_list)
     #print len(distinct_words)
     for i in range(len(index_map)):
+        #print index_map_inverted[i]
         for j in range(len(inverted_index)):
             each = inverted_index_list[j]
             if each[i] == 0:
                 log_weighted_doc_term_matrix[i][j] = 0
             else:
-                log_weighted_doc_term_matrix[i][j] = 1 + math.log(each[i]) 
+                log_weighted_doc_term_matrix[i][j] = 1 + math.log(each[i])
+            #print each, log_weighted_doc_term_matrix[i][j]
     #print "Log weighted Index terms are :"
     #print log_weighted_doc_term_matrix
     collection_frequency = [sum(x) for x in inverted_index_list]
@@ -131,7 +133,6 @@ def buildInvertedIndex():
             document_frequency[i] = math.log((len(index_map))/ freq) 
     #print "Document Frequency is: "   
     #print document_frequency
-    #print "finally the tf-idf matrix is:"
     for i in range(len(log_weighted_doc_term_matrix)):
         for j in range(len(document_frequency)): 
             tf_idf_score[i][j] = log_weighted_doc_term_matrix[i][j] * document_frequency[j] 

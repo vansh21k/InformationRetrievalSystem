@@ -137,8 +137,6 @@ def boolean_model(parsed_query, special = 'NONE', n =2 ):
                 t = each.replace('*', '')
                 n_gram_words = ngrams_query(t.strip())
                 n_gram_words.remove(t[-1] + '%')
-                #print "ngram words are :"
-                #print n_gram_words
                 cur = set()
                 for each in n_gram_words:
                     #print each
@@ -152,7 +150,6 @@ def boolean_model(parsed_query, special = 'NONE', n =2 ):
                     else:
                         cur = cur.intersection(set())
                 cur = validate_wildcard(cur, validation)
-                #print "Current set after validation ", cur
                 if (len(result) > 0) or len(test) > 0:
                     new_res = []
                     for i in range(len(index_map)):
@@ -236,18 +233,20 @@ def ranked_retrieval(parsed_query, vector = 'NONE'):
         for item in query_frequency_matrix:
             query_magnitude += (item * item)
         query_magnitude = math.sqrt(query_magnitude)
-        query_frequency_matrix = [1 + math.log(x) for x in query_frequency_matrix]
+        query_frequency_matrix = [(1 + math.log(x)) for x in query_frequency_matrix]
         #print query_distinct_words
         #print query_frequency_matrix
         for i in range(len(tf_idf_score)):
             document_magnitude = 0.0
             for item in tf_idf_score[i]:
                 document_magnitude+=(item*item)
+            document_magnitude = math.sqrt(document_magnitude)
             for each in parsed_query:
                 try:
                     ind_1 = distinct_words.index(each)
                     ind_2 = query_distinct_words.index(each)
-                    sim_scores[i][1]+=((tf_idf_score[i][ind_1] * query_frequency_matrix[ind_2])/(query_magnitude * document_magnitude))
+                    if (ind_1 >= 0) and (ind_2 >= 0):
+                        sim_scores[i][1]+=((tf_idf_score[i][ind_1] * query_frequency_matrix[ind_2])/(query_magnitude * document_magnitude))
                 except Exception:
                     pass
         sim_scores.sort( key=itemgetter(1), reverse=True)
@@ -258,9 +257,11 @@ def ranked_retrieval(parsed_query, vector = 'NONE'):
         print "Ranked Retrieval Model"
         print "####################################################"
         for i in range(len(tf_idf_score)):
+            #print tf_idf_score[i]
             for each in parsed_query:
                 try:
                     ind = distinct_words.index(each)
+                    #print each, ind ,tf_idf_score[i][ind] 
                     doc_scores[i][1]+=tf_idf_score[i][ind]
                 except Exception:
                     pass
