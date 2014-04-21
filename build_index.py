@@ -11,6 +11,7 @@ from operator import itemgetter
 import glob
 from preprocess import *
 
+NGRAM_PARAMETER = 2
 tf_idf_score = []
 document_frequency = [] #This is the idf matrix instead
 collection_frequency = []
@@ -23,6 +24,7 @@ distinct_words = set() #Set to identify all words
 n_gram_index = {} # Key: bigram, Value: List of terms 
 boolean_inverted_index = [] #Boolean index to support wild card queries and phrasal queries
 index_map_inverted = {}
+
 def ngrams_sentence( n_input,n = 2):
     global n_gram_index
     for each in correct_sentence(removePunctuation(n_input.lower())).strip().split():
@@ -143,11 +145,31 @@ def readFiles(file_list, stemming = False, n = 2):
        Current Standard of Normalization: lower case, remove punctuation, spell check
        To add: Stop Word List
      '''
-    global index
+    global tf_idf_score 
+    global document_frequency 
+    global collection_frequency 
+    global log_weighted_doc_term_matrix
+    global inverted_index_list
+    global index_map 
+    global index 
     global inverted_index
-    global distinct_words
-    global index_map
-    global index_map_inverted
+    global distinct_words 
+    global n_gram_index 
+    global boolean_inverted_index 
+    global index_map_inverted   
+    tf_idf_score = []
+    document_frequency = [] #This is the idf matrix instead
+    collection_frequency = []
+    log_weighted_doc_term_matrix= []
+    inverted_index_list = []
+    index_map = {}
+    index = {} #2d term Frequence Matrix
+    inverted_index = {} #Inverted Index
+    distinct_words = set() #Set to identify all words 
+    n_gram_index = {} # Key: bigram, Value: List of terms 
+    boolean_inverted_index = [] #Boolean index to support wild card queries and phrasal queries
+    index_map_inverted = {}
+
     count = 0
     for each in file_list:
         try:
@@ -187,10 +209,13 @@ def readFiles(file_list, stemming = False, n = 2):
     #print index
     buildInvertedIndex()
     buildNGramIndex(file_list, n)
-#print ngrams_sentence("hello hello how are you  I am fine", 2)
-os.chdir("data/")
-files = glob.glob('*.txt')
-readFiles(files, stemming = True, n =2)
+
+def get_files():
+    os.chdir("data/")
+    return glob.glob('*.txt')
+
+files = get_files()
+readFiles(files, stemming = True, n = NGRAM_PARAMETER)
 print index_map
 print index_map_inverted
 def display_all():

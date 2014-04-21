@@ -106,12 +106,15 @@ def validate_wildcard(sample, validator):
             new_sample.append(each)
     return new_sample 
 
-def boolean_model(parsed_query, special = 'none', n =2 ):
+def boolean_model(parsed_query, special = 'NONE', n =2 ):
     #print distinct_words
     prev_result = []
     result = set()
     parsed_query.reverse()
-    if special == 'ngram':
+    if special == 'NGRAM':
+        print "####################################################"
+        print "Ngram Boolean Model"
+        print "####################################################"
         n_gram_words = []
         test = []
         for each in parsed_query:
@@ -197,6 +200,9 @@ def boolean_model(parsed_query, special = 'none', n =2 ):
             result&=old_result # result|=old_result
         #print "Final result is", result
     else:
+        print "####################################################"
+        print "Simple Boolean Model"
+        print "####################################################"
         parsed_query.insert(0, '(')
         parsed_query.append(')')
         #print parsed_query
@@ -212,11 +218,14 @@ def boolean_model(parsed_query, special = 'none', n =2 ):
 #print ngrams_query("hell")
 
 
-def ranked_retrieval(parsed_query, vector = 'none'):
+def ranked_retrieval(parsed_query, vector = 'NONE'):
     global query_distinct_words, query_frequency_matrix
     doc_scores = [[x,0] for x in range(len(index_map_inverted))]
     sim_scores = [[x,0] for x in range(len(index_map_inverted))]
-    if vector != 'none':
+    if vector != 'NONE':
+        print "####################################################"
+        print "Vector Space Model"
+        print "####################################################"
         #print parsed_query, type(parsed_query)
         query_magnitude = 0.0
         query_distinct_words = list(set(parsed_query))
@@ -245,6 +254,9 @@ def ranked_retrieval(parsed_query, vector = 'none'):
         for item in sim_scores[:10]:
             print "Document Name: " + index_map_inverted[item[0]] + " Relevance Score: " + str(item[1])
     else:
+        print "####################################################"
+        print "Ranked Retrieval Model"
+        print "####################################################"
         for i in range(len(tf_idf_score)):
             for each in parsed_query:
                 try:
