@@ -10,9 +10,15 @@ Simple prototype of a search engine, salient features of this project:
 
 ###Dependencies
 * stemming, https://pypi.python.org/pypi/stemming/1.0
+* SimpleGuiTK
 
+### Usage
+1. Put documents in data folder.
+2. To run: Type on the terminal
+  python main.py
 
 
 ###To Do:
 * Documentation
 * Simple GUI interface to make things more interactive
+
